@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HS Open Coders</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background-image: url('https://wallpapercave.com/wp/wp2465927.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+    .logo {
+      width: 150px;
+      margin-top: 20px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 3em;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px 40px;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      margin: 5px;
+      background-color: #00b894;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background-color: #019875;
+    }
+    .form-container, .dashboard, #ticTacToe, #flappyBirdContainer, #calculatorContainer {
+      display: none;
+      margin-top: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+    }
+    .form-container input {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .form-container input[type="submit"] {
+      background-color: #0984e3;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .form-container input[type="submit"]:hover {
+      background-color: #076bb8;
+    }
+    canvas {
+      background: #70c5ce;
+      display: block;
+      margin: 0 auto;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      cursor: pointer;
+      border: 2px solid #333;
+      color: black;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 1.2em;
+      color: white;
+    }
+    #restart {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+    #calculatorContainer input {
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <img src="logo.png" alt="HS Open Coders Logo" class="logo">
+  <h1>HS Open Coders</h1>
+  <div>
+    <button class="btn" onclick="showForm('register')">Register</button>
+    <button class="btn" onclick="showForm('login')">Login</button>
+  </div>
+  <div class="form-container" id="registerForm">
+    <form onsubmit="handleLogin(event)">
+      <input type="text" placeholder="Full Name" required>
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <input type="submit" value="Register">
+    </form>
+  </div>
+  <div class="form-container" id="loginForm">
+    <form onsubmit="handleLogin(event)">
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <input type="submit" value="Login">
+    </form>
+  </div>
+  <div class="dashboard" id="dashboard">
+    <button class="btn" onclick="showFlappyBird()">FLAPPY BIRD</button>
+    <button class="btn" onclick="showTicTacToe()">TIC TAC TOE</button>
+    <button class="btn" onclick="showCalculator()">CALCULATOR</button>
+    <button class="btn" onclick="logout()">Logout</button>
+  </div>
+  <div id="flappyBirdContainer">
+    <canvas id="flappyCanvas" width="320" height="480"></canvas>
+  </div>
+  <div id="ticTacToe">
+    <div id="game"></div>
+    <div id="status"></div>
+    <button id="restart">Restart</button>
+  </div>
+  <div id="calculatorContainer">
+    <input type="number" id="num1" placeholder="Enter first number">
+    <input type="number" id="num2" placeholder="Enter second number">
+    <select id="operation">
+      <option value="add">Add</option>
+      <option value="subtract">Subtract</option>
+      <option value="multiply">Multiply</option>
+      <option value="divide">Divide</option>
+    </select>
+    <button class="btn" onclick="calculate()">Calculate</button>
+    <div id="calcResult" style="margin-top: 15px; font-size: 1.2em;"></div>
+  </div>
+  <script>
+    function showForm(type) {
+      document.getElementById('registerForm').style.display = (type === 'register') ? 'block' : 'none';
+      document.getElementById('loginForm').style.display = (type === 'login') ? 'block' : 'none';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('ticTacToe').style.display = 'none';
+      document.getElementById('flappyBirdContainer').style.display = 'none';
+      document.getElementById('calculatorContainer').style.display = 'none';
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    }
+
+    function logout() {
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('ticTacToe').style.display = 'none';
+      document.getElementById('flappyBirdContainer').style.display = 'none';
+      document.getElementById('calculatorContainer').style.display = 'none';
+    }
+
+    function showTicTacToe() {
+      document.getElementById('ticTacToe').style.display = 'block';
+      document.getElementById('flappyBirdContainer').style.display = 'none';
+      document.getElementById('calculatorContainer').style.display = 'none';
+    }
+
+    function showFlappyBird() {
+      document.getElementById('ticTacToe').style.display = 'none';
+      document.getElementById('flappyBirdContainer').style.display = 'block';
+      document.getElementById('calculatorContainer').style.display = 'none';
+      startFlappy();
+    }
+
+    function showCalculator() {
+      document.getElementById('ticTacToe').style.display = 'none';
+      document.getElementById('flappyBirdContainer').style.display = 'none';
+      document.getElementById('calculatorContainer').style.display = 'block';
+    }
+
+    function calculate() {
+      const num1 = parseFloat(document.getElementById("num1").value);
+      const num2 = parseFloat(document.getElementById("num2").value);
+      const operation = document.getElementById("operation").value;
+      let result;
+
+      if (isNaN(num1) || isNaN(num2)) {
+        result = "Please enter valid numbers.";
+      } else {
+        switch (operation) {
+          case 'add': result = num1 + num2; break;
+          case 'subtract': result = num1 - num2; break;
+          case 'multiply': result = num1 * num2; break;
+          case 'divide': result = num2 === 0 ? 'Error: Division by zero' : num1 / num2; break;
+        }
+      }
+
+      document.getElementById("calcResult").innerText = "Result: " + result;
+    }
+
+    function startFlappy() {
+      const canvas = document.getElementById("flappyCanvas");
+      const ctx = canvas.getContext("2d");
+
+      const bird = {
+        x: 50,
+        y: 150,
+        width: 20,
+        height: 20,
+        gravity: 1.5,
+        lift: -20,
+        velocity: 0,
+        draw() {
+          ctx.fillStyle = "yellow";
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+        },
+        update() {
+          this.velocity += this.gravity;
+          this.y += this.velocity;
+          if (this.y + this.height > canvas.height) {
+            this.y = canvas.height - this.height;
+            this.velocity = 0;
+          }
+          if (this.y < 0) {
+            this.y = 0;
+            this.velocity = 0;
+          }
+        },
+        jump() {
+          this.velocity = this.lift;
+        }
+      };
+
+      const pipes = [];
+      const pipeWidth = 40;
+      const gap = 120;
+      let frame = 0;
+
+      function drawPipes() {
+        for (let i = 0; i < pipes.length; i++) {
+          const p = pipes[i];
+          ctx.fillStyle = "green";
+          ctx.fillRect(p.x, 0, pipeWidth, p.top);
+          ctx.fillRect(p.x, p.bottom, pipeWidth, canvas.height - p.bottom);
+        }
+      }
+
+      function updatePipes() {
+        if (frame % 90 === 0) {
+          const top = Math.floor(Math.random() * (canvas.height - gap - 100)) + 20;
+          const bottom = top + gap;
+          pipes.push({ x: canvas.width, top, bottom });
+        }
+
+        for (let i = 0; i < pipes.length; i++) {
+          pipes[i].x -= 2;
+          if (
+            bird.x < pipes[i].x + pipeWidth &&
+            bird.x + bird.width > pipes[i].x &&
+            (bird.y < pipes[i].top || bird.y + bird.height > pipes[i].bottom)
+          ) {
+            alert("Game Over!");
+            document.location.reload();
+          }
+        }
+
+        if (pipes.length > 0 && pipes[0].x + pipeWidth < 0) {
+          pipes.shift();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bird.draw();
+        drawPipes();
+      }
+
+      function update() {
+        bird.update();
+        updatePipes();
+      }
+
+      function loop() {
+        update();
+        draw();
+        frame++;
+        requestAnimationFrame(loop);
+      }
+
+      document.addEventListener("keydown", function (e) {
+        if (e.code === "Space") bird.jump();
+      });
+
+      loop();
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Open Coders</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('logo.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      max-width: 500px;
+      margin: 50px auto;
+      border-radius: 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    canvas {
+      background: #70c5ce;
+      display: block;
+      margin: 20px auto;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="authContainer">
+    <h1>HS Open Coders</h1>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>  <div class="container hidden" id="menu">
+    <h1>Welcome!</h1>
+    <button onclick="showSection('flappySection')">Flappy Bird</button>
+    <button onclick="showSection('ticTacToeSection')">Tic Tac Toe</button>
+    <button onclick="showSection('calculatorSection')">Calculator</button>
+    <button onclick="showSection('chatbotSection')">Ask AI</button>
+  </div>  <!-- Flappy Bird Section -->  <div id="flappySection" class="hidden">
+    <canvas id="game" width="320" height="480"></canvas>
+  </div>  <!-- Tic Tac Toe Section -->  <div class="hidden" id="ticTacToeSection">
+    <div id="gameTic"></div>
+    <div id="status"></div>
+    <button onclick="restartGame()">Restart</button>
+  </div>  <!-- Calculator Section -->  <div class="hidden" id="calculatorSection">
+    <h2>Calculator</h2>
+    <input type="number" id="num1" placeholder="First Number">
+    <input type="number" id="num2" placeholder="Second Number">
+    <select id="operation">
+      <option value="add">Add</option>
+      <option value="subtract">Subtract</option>
+      <option value="multiply">Multiply</option>
+      <option value="divide">Divide</option>
+    </select>
+    <button onclick="calculate()">Calculate</button>
+    <p id="calcResult"></p>
+  </div>  <!-- AI Chatbot Section -->  <div class="hidden" id="chatbotSection">
+    <h2>Ask AI</h2>
+    <div id="chatbox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #f9f9f9;"></div>
+    <input type="text" id="userInput" placeholder="Type your question..." />
+    <button onclick="talkToAI()">Send</button>
+  </div>  <script>
+    function login() {
+      document.getElementById('authContainer').classList.add('hidden');
+      document.getElementById('menu').classList.remove('hidden');
+      showSection('flappySection');
+    }
+
+    function register() {
+      alert("Registered Successfully!");
+    }
+
+    function showSection(id) {
+      document.getElementById('flappySection').classList.add('hidden');
+      document.getElementById('ticTacToeSection').classList.add('hidden');
+      document.getElementById('calculatorSection').classList.add('hidden');
+      document.getElementById('chatbotSection').classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // Flappy Bird Code
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const bird = { x: 50, y: 150, width: 20, height: 20, gravity: 1.5, lift: -20, velocity: 0,
+      draw() { ctx.fillStyle = "yellow"; ctx.fillRect(this.x, this.y, this.width, this.height); },
+      update() { this.velocity += this.gravity; this.y += this.velocity;
+        if (this.y + this.height > canvas.height) this.y = canvas.height - this.height;
+        if (this.y < 0) this.y = 0; } };
+    const pipes = [], pipeWidth = 40, gap = 120;
+    let frame = 0;
+    function drawPipes() {
+      pipes.forEach(p => {
+        ctx.fillStyle = "green";
+        ctx.fillRect(p.x, 0, pipeWidth, p.top);
+        ctx.fillRect(p.x, p.bottom, pipeWidth, canvas.height - p.bottom);
+      });
+    }
+    function updatePipes() {
+      if (frame % 90 === 0) {
+        const top = Math.floor(Math.random() * (canvas.height - gap - 100)) + 20;
+        pipes.push({ x: canvas.width, top, bottom: top + gap });
+      }
+      pipes.forEach(p => p.x -= 2);
+      pipes.forEach(p => {
+        if (bird.x < p.x + pipeWidth && bird.x + bird.width > p.x && (bird.y < p.top || bird.y + bird.height > p.bottom)) {
+          alert("Game Over!");
+          document.location.reload();
+        }
+      });
+      if (pipes.length && pipes[0].x + pipeWidth < 0) pipes.shift();
+    }
+    function loop() {
+      if (!canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bird.update();
+      bird.draw();
+      updatePipes();
+      drawPipes();
+      frame++;
+      requestAnimationFrame(loop);
+    }
+    document.addEventListener("keydown", e => { if (e.code === "Space") bird.velocity = bird.lift; });
+    loop();
+
+    // Tic Tac Toe Code
+    const game = document.getElementById('gameTic');
+    const statusDiv = document.getElementById('status');
+    let board = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let gameOver = false;
+    function render() {
+      game.innerHTML = '';
+      board.forEach((cell, i) => {
+        const div = document.createElement('div');
+        div.className = 'cell';
+        div.textContent = cell;
+        div.style = 'width:100px;height:100px;border:1px solid #333;display:inline-flex;align-items:center;justify-content:center;font-size:2em;';
+        div.addEventListener('click', () => makeMove(i));
+        game.appendChild(div);
+      });
+      const winner = checkWinner();
+      statusDiv.textContent = winner ? (winner === 'Draw' ? "It's a Draw!" : `${winner} Wins!`) : `${currentPlayer}'s Turn`;
+    }
+    function checkWinner() {
+      const winCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (const [a,b,c] of winCombos) if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+      return board.every(cell => cell) ? 'Draw' : null;
+    }
+    function makeMove(i) { if (!gameOver && !board[i]) { board[i] = currentPlayer; currentPlayer = currentPlayer === 'X' ? 'O' : 'X'; render(); } }
+    function restartGame() { board = Array(9).fill(null); currentPlayer = 'X'; gameOver = false; render(); }
+    render();
+
+    // Calculator Code
+    function calculate() {
+      const num1 = parseFloat(document.getElementById('num1').value);
+      const num2 = parseFloat(document.getElementById('num2').value);
+      const op = document.getElementById('operation').value;
+      let result = '';
+      if (isNaN(num1) || isNaN(num2)) result = 'Invalid input';
+      else {
+        if (op === 'add') result = num1 + num2;
+        else if (op === 'subtract') result = num1 - num2;
+        else if (op === 'multiply') result = num1 * num2;
+        else if (op === 'divide') result = num2 === 0 ? 'Cannot divide by zero' : num1 / num2;
+      }
+      document.getElementById('calcResult').textContent = 'Result: ' + result;
+    }
+
+    // AI Chatbot
+    function talkToAI() {
+      const input = document.getElementById("userInput").value;
+      if (!input.trim()) return;
+      appendMessage("You", input);
+      const response = getAIResponse(input);
+      appendMessage("AI", response);
+      document.getElementById("userInput").value = "";
+    }
+    function appendMessage(sender, message) {
+      const msg = document.createElement("div");
+      msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      document.getElementById("chatbox").appendChild(msg);
+      document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+    }
+    function getAIResponse(input) {
+      input = input.toLowerCase();
+      if (input.includes("hello") || input.includes("hi")) return "Hello! How can I help you today?";
+      else if (input.includes("your name")) return "I'm HS Open Coders AI Assistant!";
+      else if (input.includes("help") || input.includes("can you")) return "I can help with coding, games, or math! Try asking.";
+      else return "I'm still learning. Try asking something else!";
+    }
+  </script></body>
+</html>
